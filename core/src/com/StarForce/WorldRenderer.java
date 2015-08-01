@@ -11,11 +11,20 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 
 public class WorldRenderer {
 	private TiledMap map;
 	float w = Gdx.graphics.getWidth();
     float h = Gdx.graphics.getHeight();
+    
 	private OrthogonalTiledMapRenderer renderer2;
 	private OrthographicCamera cam;
 	private static final float RUNNING_FRAME_DURATION = 0.06f;
@@ -34,6 +43,10 @@ public class WorldRenderer {
 	private Animation walkLeftAnimation;
 	private Animation walkRightAnimation;
 	
+	private World world;
+	private Box2DDebugRenderer b2dr;
+	private OrthographicCamera b2dCam;
+	
 	private SpriteBatch spriteBatch;
 	
 	private float ppuX;	
@@ -51,14 +64,35 @@ public class WorldRenderer {
 	public WorldRenderer(Level level, StarForce game) {//first param was World world not Level level!
 		this.level = level; 
 		this.hero = level.getHero();
+		
+		this.world = new World(new Vector2(0f, -9.8f), true);
+		this.b2dr = new Box2DDebugRenderer();
+		b2dCam = new OrthographicCamera();
+		b2dCam.setToOrtho(false, w, h);
+		
 		TmxMapLoader loader = new TmxMapLoader();
          map = loader.load("Level1.tmx");
          renderer2 = new OrthogonalTiledMapRenderer(map);
 		this.cam = new OrthographicCamera(w,h);
 		cam.setToOrtho(false, w,h);
 		this.game = game;
+		testFunction();
 		spriteBatch = new SpriteBatch();
 		loadTextures();
+	}
+	public void testFunction() {
+		BodyDef bdef = new BodyDef();
+		FixtureDef fdef = new FixtureDef();
+		PolygonShape shape = new PolygonShape();
+		
+		// create player
+		bdef.position.set(hero.getPosition().x + Hero.SIZE/2, hero.getPosition().y + Hero.SIZE/2);
+		bdef.type = BodyType.DynamicBody;
+		Body body = world.createBody(bdef);
+		shape.setAsBox(Hero.SIZE/2f, Hero.SIZE/2f);
+		fdef.shape = shape;
+		
+		body.createFixture(fdef);
 	}
 	private void loadTextures() {
 		atlas = new TextureAtlas(Gdx.files.internal("PlayerSprite.txt")); //internal is read only!
@@ -94,8 +128,13 @@ public class WorldRenderer {
 		spriteBatch.begin();
 			drawHero();
 		spriteBatch.end();
+		b2dr.render(world, cam.combined);
+		world.step(1/45, 6, 2);
 	}
 	private void drawHero() {
+		
+		
+		
 		Hero hero = level.getHero(); //was level.getBob();
 		heroFrame = hero.isFacingLeft() ? heroIdleLeft : heroIdleRight;
 		if(hero.getState().equals(State.WALKING)) {
