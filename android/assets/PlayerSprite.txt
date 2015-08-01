@@ -1,0 +1,46 @@
+PlayerSprite.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Ntransparent01
+  rotate: false
+  xy: 2, 2
+  size: 91, 169
+  orig: 91, 169
+  offset: 0, 0
+  index: -1
+Ntransparent02
+  rotate: false
+  xy: 95, 2
+  size: 170, 215
+  orig: 170, 215
+  offset: 0, 0
+  index: -1
+Ntransparent03
+  rotate: false
+  xy: 267, 2
+  size: 111, 180
+  orig: 111, 180
+  offset: 0, 0
+  index: -1
+Ntransparent04
+  rotate: false
+  xy: 380, 2
+  size: 117, 179
+  orig: 117, 179
+  offset: 0, 0
+  index: -1
+Ntransparent05
+  rotate: false
+  xy: 2, 219
+  size: 166, 157
+  orig: 166, 157
+  offset: 0, 0
+  index: -1
+Ntransparent06
+  rotate: false
+  xy: 170, 219
+  size: 145, 172
+  orig: 145, 172
+  offset: 0, 0
+  index: -1
