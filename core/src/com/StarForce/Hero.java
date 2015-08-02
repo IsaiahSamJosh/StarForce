@@ -9,15 +9,11 @@ public class Hero {
 	public enum State {
 		IDLE, WALKING, JUMPING, DYING
 	}
-
-	static final float SPEED = 200f;	// unit per second
-	// static final float JUMP_VELOCITY = 1f;
 	 static final float SIZE = 50f; // half a unit
 
 	float stateTime = 0;
 	Body body;
 	Rectangle bounds = new Rectangle();
-	Vector2 velocity = new Vector2();
 	State state = State.IDLE;
 	boolean facingLeft = false;
 	
@@ -44,15 +40,6 @@ public class Hero {
 	public float getStateTime() {
 		return stateTime;
 	}
-	
-	public Vector2 getVelocity() {
-		return velocity;
-	}
-	
-	public void setVelocity(Vector2 v) {
-		velocity = v;
-	}
-	
 	public State getState() {
 		return this.state;
 	}
@@ -74,7 +61,6 @@ public class Hero {
 	//}
 	
 	public void update(float delta) {
-		//position.add(velocity.cpy().scl(delta)); // Adds the velocity vector scaled by delta time to position
 		stateTime += delta;
 	}
 }

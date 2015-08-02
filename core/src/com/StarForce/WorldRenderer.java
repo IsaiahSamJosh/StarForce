@@ -28,7 +28,6 @@ public class WorldRenderer {
 	private OrthogonalTiledMapRenderer renderer2;
 	private OrthographicCamera cam;
 	private static final float RUNNING_FRAME_DURATION = 0.06f;
-	private Level level;
 	private StarForce game;
 	TextureAtlas atlas;
 	private Hero hero;
@@ -60,10 +59,7 @@ public class WorldRenderer {
 		ppuY = (float)height / h;
 		//resizes the screen based on the width and the height of the level
 	}
-	public WorldRenderer(Level level, StarForce game) {//first param was World world not Level level!
-		this.level = level; 
-		//this.hero = level.getHero();
-		
+	public WorldRenderer(StarForce game) {//first param was World world not Level level!
 		this.world = new World(new Vector2(0f, 0f), true);
 		this.b2dr = new Box2DDebugRenderer();
 		
@@ -137,13 +133,13 @@ public class WorldRenderer {
 		heroFrame = hero.isFacingLeft() ? heroIdleLeft : heroIdleRight;
 		if(hero.getState().equals(State.WALKING)) {
 			heroFrame = hero.isFacingLeft() ? walkLeftAnimation.getKeyFrame(hero.getStateTime(), true) : walkRightAnimation.getKeyFrame(hero.getStateTime(), true);
-		} else if (hero.getState().equals(State.JUMPING)) {
-			if (hero.getVelocity().y > 0) {
-				heroFrame = hero.isFacingLeft() ? heroJumpLeft : heroJumpRight;
-			} else {
-				heroFrame = hero.isFacingLeft() ? heroFallLeft : heroFallRight;
-			}
-		}
+		} //else if (hero.getState().equals(State.JUMPING)) {
+			//if (hero.getVelocity().y > 0) {
+				//heroFrame = hero.isFacingLeft() ? heroJumpLeft : heroJumpRight;
+			//} else {
+				//heroFrame = hero.isFacingLeft() ? heroFallLeft : heroFallRight;
+			//}
+		//}
 		spriteBatch.draw(heroFrame, hero.getPosition().x - hero.SIZE/2, hero.getPosition().y - hero.SIZE/2, Hero.SIZE, Hero.SIZE);
 	}
 	public void dispose(){

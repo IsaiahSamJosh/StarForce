@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.GL20;
 
 public class PlayScreen implements Screen, InputProcessor {
 	private int width, height;
-	private Level level;
     private WorldRenderer renderer;
     private WorldController controller;
     StarForce game;
@@ -24,7 +23,6 @@ public class PlayScreen implements Screen, InputProcessor {
 	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);//clears the screen with the created color
 
 	controller.update(delta);
-    level.update(delta); 
     renderer.render();
 
 	}
@@ -38,8 +36,7 @@ public class PlayScreen implements Screen, InputProcessor {
 
 	@Override
 	public void show() {
-		level = new Level();
-		renderer = new WorldRenderer(level,game); //first param was world
+		renderer = new WorldRenderer(game); //first param was world
         controller = new WorldController(renderer,game);
          Gdx.input.setInputProcessor(this);
 	}

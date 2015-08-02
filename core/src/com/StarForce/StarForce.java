@@ -1,18 +1,21 @@
 package com.StarForce;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.graphics.FPSLogger;
 
 public class StarForce extends Game {
-
+	FPSLogger fps;
 	
 	@Override
 	public void create () {
   setScreen(new PlayScreen(this));
+  fps = new FPSLogger();
 	}
 
 	@Override
 	public void render () {
         super.render();
+        fps.log();
 	}
 	
 	public void dispose(){
