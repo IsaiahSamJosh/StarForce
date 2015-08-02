@@ -40,7 +40,7 @@ public class PlayScreen implements Screen, InputProcessor {
 	public void show() {
 		level = new Level();
 		renderer = new WorldRenderer(level,game); //first param was world
-        controller = new WorldController(level,game);
+        controller = new WorldController(renderer,game);
          Gdx.input.setInputProcessor(this);
 	}
 

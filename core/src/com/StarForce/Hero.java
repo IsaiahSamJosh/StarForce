@@ -2,6 +2,7 @@ package com.StarForce;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 public class Hero {
 
@@ -14,7 +15,7 @@ public class Hero {
 	 static final float SIZE = 50f; // half a unit
 
 	float stateTime = 0;
-	Vector2 position = new Vector2();
+	Body body;
 	Rectangle bounds = new Rectangle();
 	Vector2 velocity = new Vector2();
 	State state = State.IDLE;
@@ -22,18 +23,18 @@ public class Hero {
 	
 	// float health = 10f;
 
-	public Hero(Vector2 position) {
-		this.position = position;
+	public Hero(Body body) {
+		this.body = body;
 		this.bounds.height = SIZE;
 		this.bounds.width = SIZE;
 	}
 	
-	public Vector2 getPosition() {
-		return position;
+	public Body getBody() {
+		return body;
 	}
 	
-	public void setPosition(Vector2 newPos) {
-		position = newPos;
+	public Vector2 getPosition() {
+		return body.getPosition();
 	}
 	
 	public Rectangle getBounds() {
@@ -73,7 +74,7 @@ public class Hero {
 	//}
 	
 	public void update(float delta) {
-		position.add(velocity.cpy().scl(delta)); // Adds the velocity vector scaled by delta time to position
+		//position.add(velocity.cpy().scl(delta)); // Adds the velocity vector scaled by delta time to position
 		stateTime += delta;
 	}
 }

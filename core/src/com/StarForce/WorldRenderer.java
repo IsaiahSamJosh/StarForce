@@ -45,7 +45,6 @@ public class WorldRenderer {
 	
 	private World world;
 	private Box2DDebugRenderer b2dr;
-	private OrthographicCamera b2dCam;
 	
 	private SpriteBatch spriteBatch;
 	
@@ -63,37 +62,40 @@ public class WorldRenderer {
 	}
 	public WorldRenderer(Level level, StarForce game) {//first param was World world not Level level!
 		this.level = level; 
-		this.hero = level.getHero();
+		//this.hero = level.getHero();
 		
-		this.world = new World(new Vector2(0f, -9.8f), true);
+		this.world = new World(new Vector2(0f, 0f), true);
 		this.b2dr = new Box2DDebugRenderer();
-		b2dCam = new OrthographicCamera();
-		b2dCam.setToOrtho(false, w, h);
 		
 		TmxMapLoader loader = new TmxMapLoader();
-         map = loader.load("Level1.tmx");
-         renderer2 = new OrthogonalTiledMapRenderer(map);
+        map = loader.load("Level1.tmx");
+        renderer2 = new OrthogonalTiledMapRenderer(map);
 		this.cam = new OrthographicCamera(w,h);
 		cam.setToOrtho(false, w,h);
 		this.game = game;
-		testFunction();
-		spriteBatch = new SpriteBatch();
-		loadTextures();
-	}
-	public void testFunction() {
+		
 		BodyDef bdef = new BodyDef();
 		FixtureDef fdef = new FixtureDef();
 		PolygonShape shape = new PolygonShape();
 		
 		// create player
-		bdef.position.set(hero.getPosition().x + Hero.SIZE/2, hero.getPosition().y + Hero.SIZE/2);
+		bdef.position.set(30,20);
 		bdef.type = BodyType.DynamicBody;
 		Body body = world.createBody(bdef);
 		shape.setAsBox(Hero.SIZE/2f, Hero.SIZE/2f);
 		fdef.shape = shape;
-		
 		body.createFixture(fdef);
+		
+		this.hero = new Hero(body);
+		spriteBatch = new SpriteBatch();
+		
+		loadTextures();
 	}
+	
+	public Hero getHero() {
+		return hero;
+	}
+	
 	private void loadTextures() {
 		atlas = new TextureAtlas(Gdx.files.internal("PlayerSprite.txt")); //internal is read only!
 		heroIdleLeft = atlas.findRegion("Ntransparent01");
@@ -129,13 +131,9 @@ public class WorldRenderer {
 			drawHero();
 		spriteBatch.end();
 		b2dr.render(world, cam.combined);
-		world.step(1/45, 6, 2);
+		world.step(1/45f, 6, 2);
 	}
 	private void drawHero() {
-		
-		
-		
-		Hero hero = level.getHero(); //was level.getBob();
 		heroFrame = hero.isFacingLeft() ? heroIdleLeft : heroIdleRight;
 		if(hero.getState().equals(State.WALKING)) {
 			heroFrame = hero.isFacingLeft() ? walkLeftAnimation.getKeyFrame(hero.getStateTime(), true) : walkRightAnimation.getKeyFrame(hero.getStateTime(), true);
@@ -146,7 +144,7 @@ public class WorldRenderer {
 				heroFrame = hero.isFacingLeft() ? heroFallLeft : heroFallRight;
 			}
 		}
-		spriteBatch.draw(heroFrame, hero.getPosition().x, hero.getPosition().y, Hero.SIZE, Hero.SIZE);
+		spriteBatch.draw(heroFrame, hero.getPosition().x - hero.SIZE/2, hero.getPosition().y - hero.SIZE/2, Hero.SIZE, Hero.SIZE);
 	}
 	public void dispose(){
 		spriteBatch.dispose();

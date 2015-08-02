@@ -16,7 +16,7 @@ public class Level {
 		createLevel();
 	}
 	private void createLevel(){
-	hero = new Hero(new Vector2(2,2));
+	//hero = new Hero(new Vector2(2,2));
 	}
 	public void update(float delta){
 		
