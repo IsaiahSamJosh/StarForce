@@ -42,6 +42,8 @@ public class WorldRenderer {
 	private Animation walkRightAnimation;
 	private TextureAtlas atlas;
 	private SpriteBatch spriteBatch;
+	private Body playerBody;
+	private MyContactListener cl;
 	
 	private float ppuX;	
 	private float ppuY;
@@ -56,7 +58,9 @@ public class WorldRenderer {
 		//resizes the screen based on the width and the height of the level
 	}
 	public WorldRenderer(StarForce game) {//first param was World world not Level level!
-		this.world = new World(new Vector2(0f, -10000f), true);
+		this.world = new World(new Vector2(0f, -10f), true);
+		cl=new MyContactListener();
+		world.setContactListener(cl);
 		this.b2dr = new Box2DDebugRenderer();
 		this.tx=new Textures();
 		TmxMapLoader loader = new TmxMapLoader();
@@ -65,6 +69,7 @@ public class WorldRenderer {
 		this.cam = new OrthographicCamera(w,h);
 		cam.setToOrtho(false, w,h);
 		this.game = game;
+		Gdx.input.setInputProcessor(new PlayScreen(game));
 		
 		BodyDef bdef = new BodyDef();
 		FixtureDef fdef = new FixtureDef();
@@ -73,14 +78,24 @@ public class WorldRenderer {
 		// create player
 		bdef.position.set(600,900);
 		bdef.type = BodyType.DynamicBody;
-		Body body = world.createBody(bdef);
+		playerBody= world.createBody(bdef);
 		shape.setAsBox(Hero.SIZE/2f, Hero.SIZE/2f);
 		fdef.shape = shape;
-		fdef.filter.categoryBits = 0x10;
-		fdef.filter.maskBits = 0x01;
-		body.createFixture(fdef);
+		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
+		fdef.filter.maskBits =B2DVars.BIT_GROUND;
+		fdef.isSensor=false;
+		playerBody.createFixture(fdef).setUserData("player");
 		
-		this.hero = new Hero(body);
+		//create foot
+		shape.setAsBox(4, 4, new Vector2(0,-24), 0);
+		fdef.shape=shape;
+		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
+		fdef.filter.maskBits =B2DVars.BIT_GROUND;
+		fdef.isSensor=true;
+		playerBody.createFixture(fdef).setUserData("foot");
+		
+		
+		this.hero = new Hero(playerBody);
 		spriteBatch = new SpriteBatch();
 		
 		loadTextures();
@@ -135,12 +150,12 @@ public class WorldRenderer {
 				v[2] = new Vector2(
 					tileSize / 2, tileSize / 2);
 				cs.createChain(v);
-				fdef.friction = 1f;
+				fdef.friction = 100000f;
 				fdef.shape = cs;
-				fdef.filter.categoryBits = 0x01;
-				fdef.filter.maskBits = 0x10;
+				fdef.filter.categoryBits = B2DVars.BIT_GROUND;
+				fdef.filter.maskBits = B2DVars.BIT_PLAYER;
 				fdef.isSensor = false;
-				world.createBody(bdef).createFixture(fdef);
+				world.createBody(bdef).createFixture(fdef).setUserData("Ground");
 				
 				
 			}
@@ -168,6 +183,7 @@ public class WorldRenderer {
 		spriteBatch.end();
 		b2dr.render(world, cam.combined);
 		world.step(1/45f, 6, 2);
+		MyInput.update();
 	}
 	private void drawHero() {
 		heroFrame=tx.getHeroFrame();
@@ -192,5 +208,16 @@ public class WorldRenderer {
 		spriteBatch.dispose();
 		atlas.dispose();
 		map.dispose();
+	}
+	public void handleInput() {
+		if (MyInput.isPressed(MyInput.BUTTON1)) {
+			if (cl.isPlayerOnGround()) {
+			playerBody.applyForceToCenter(0, 1500, true);	
+			}
+		}
+	}
+	
+	public void update(float delta) {
+	handleInput();
 	}
 }

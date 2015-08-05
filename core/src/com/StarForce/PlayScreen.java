@@ -23,6 +23,7 @@ public class PlayScreen implements Screen, InputProcessor {
 	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);//clears the screen with the created color
 
 	controller.update(delta);
+	renderer.update(delta);
     renderer.render();
 
 	}
@@ -38,7 +39,7 @@ public class PlayScreen implements Screen, InputProcessor {
 	public void show() {
 		renderer = new WorldRenderer(game); //first param was world
         controller = new WorldController(renderer,game);
-         Gdx.input.setInputProcessor(this);
+        Gdx.input.setInputProcessor(this);
 	}
 
 	@Override
@@ -79,6 +80,12 @@ public class PlayScreen implements Screen, InputProcessor {
         if(keycode == Keys.D){
         	controller.rightPressed();
         }
+        if (keycode==Keys.Z) {
+        	MyInput.setKey(MyInput.BUTTON1, true);
+        }
+        if (keycode==Keys.X) {
+        	MyInput.setKey(MyInput.BUTTON2, true);
+        }
 		return false;
 	}
 
@@ -96,6 +103,12 @@ public class PlayScreen implements Screen, InputProcessor {
 		if(keycode == Keys.D) {
 			controller.rightReleased();
 		}
+		 if (keycode==Keys.Z) {
+	        	MyInput.setKey(MyInput.BUTTON1, false);
+	        }
+	        if (keycode==Keys.X) {
+	        	MyInput.setKey(MyInput.BUTTON2, false);
+	        }
 		return false;
 	}
 
