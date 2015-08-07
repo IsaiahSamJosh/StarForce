@@ -8,14 +8,14 @@ public class StarForce extends Game {
 	
 	@Override
 	public void create () {
-  setScreen(new PlayScreen(this));
+  setScreen(new MainMenuScreen(this));
   fps = new FPSLogger();
 	}
 
 	@Override
 	public void render () {
         super.render();
-        fps.log();
+        //fps.log();
 	}
 	
 	public void dispose(){

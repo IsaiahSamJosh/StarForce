@@ -117,7 +117,6 @@ public class WorldRenderer {
 		TiledMapTileLayer layer;
 		
 		layer = (TiledMapTileLayer) map.getLayers().get("Ground");
-		System.out.println(map.getLayers().get("Ground"));
 		createLayer(layer, tileSize);
 		
 		
@@ -191,8 +190,6 @@ public class WorldRenderer {
 		b2dr.render(world, physicsCam.combined);
 		world.step(1/60f, 6, 2);
 		MyInput.update();
-		//System.out.println(this.cam.position);
-		//System.out.println(this.physicsCam.position);
 	}
 	private void drawHero() {
 		heroFrame=tx.getHeroFrame();
