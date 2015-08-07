@@ -50,12 +50,12 @@ public void updateHero(float delta){
 }
 private void processInput(float delta) {
 	if (keys.get(Keys.LEFT)) {
-		hero.getBody().applyForceToCenter(new Vector2(-10000, 0), true);
+		hero.getBody().applyForceToCenter(new Vector2(-10, 0), true);
 		hero.setFacingLeft(true);
         hero.setState(State.WALKING);
 	}
 	if (keys.get(Keys.RIGHT)) {
-		hero.getBody().applyForceToCenter(new Vector2(10000, 0), true);
+		hero.getBody().applyForceToCenter(new Vector2(10, 0), true);
 		hero.setFacingLeft(false);
         hero.setState(State.WALKING);
 	}

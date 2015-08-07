@@ -30,6 +30,8 @@ public class WorldRenderer {
     
 	private OrthogonalTiledMapRenderer renderer2;
 	private OrthographicCamera cam;
+	private float PPM = 100f;
+	private OrthographicCamera physicsCam;
 	private StarForce game;
 	private Textures tx;
 	private Hero hero;
@@ -66,8 +68,10 @@ public class WorldRenderer {
 		TmxMapLoader loader = new TmxMapLoader();
         map = loader.load("Level1.tmx");
         renderer2 = new OrthogonalTiledMapRenderer(map);
-		this.cam = new OrthographicCamera(w,h);
+		this.cam = new OrthographicCamera();
 		cam.setToOrtho(false, w,h);
+		this.physicsCam = new OrthographicCamera();
+		physicsCam.setToOrtho(false, w/PPM, h/PPM);
 		this.game = game;
 		Gdx.input.setInputProcessor(new PlayScreen(game));
 		
@@ -76,10 +80,10 @@ public class WorldRenderer {
 		PolygonShape shape = new PolygonShape();
 		
 		// create player
-		bdef.position.set(600,900);
+		bdef.position.set(600/PPM,900/PPM);
 		bdef.type = BodyType.DynamicBody;
 		playerBody= world.createBody(bdef);
-		shape.setAsBox(Hero.SIZE/2f, Hero.SIZE/2f);
+		shape.setAsBox(Hero.SIZE/PPM/2f, Hero.SIZE/PPM/2f);
 		fdef.shape = shape;
 		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
 		fdef.filter.maskBits =B2DVars.BIT_GROUND;
@@ -87,6 +91,7 @@ public class WorldRenderer {
 		playerBody.createFixture(fdef).setUserData("player");
 		
 		//create foot
+		/*
 		shape.setAsBox(4, 4, new Vector2(0,-24), 0);
 		fdef.shape=shape;
 		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
@@ -94,7 +99,7 @@ public class WorldRenderer {
 		fdef.isSensor=true;
 		playerBody.createFixture(fdef).setUserData("foot");
 		
-		
+		*/
 		this.hero = new Hero(playerBody);
 		spriteBatch = new SpriteBatch();
 		
@@ -137,20 +142,20 @@ public class WorldRenderer {
 				// create a body + fixture from cell
 				bdef.type = BodyType.StaticBody;
 				bdef.position.set(
-					(col + 0.5f) * tileSize,
-					(row + 0.5f) * tileSize
+					(col + 0.5f) * tileSize/PPM,
+					(row + 0.5f) * tileSize/PPM
 				);
 				
 				ChainShape cs = new ChainShape();
 				Vector2[] v = new Vector2[3];
 				v[0] = new Vector2(
-					-tileSize / 2, -tileSize / 2);
+					-tileSize / PPM / 2, -tileSize / PPM / 2);
 				v[1] = new Vector2(
-					-tileSize / 2, tileSize / 2);
+					-tileSize / PPM / 2, tileSize / PPM / 2);
 				v[2] = new Vector2(
-					tileSize / 2, tileSize / 2);
+					tileSize / PPM / 2, tileSize / PPM / 2);
 				cs.createChain(v);
-				fdef.friction = 100000f;
+				fdef.friction = 1f;
 				fdef.shape = cs;
 				fdef.filter.categoryBits = B2DVars.BIT_GROUND;
 				fdef.filter.maskBits = B2DVars.BIT_PLAYER;
@@ -173,7 +178,9 @@ public class WorldRenderer {
 		tx.loadAnimation();
 	}
 	public void render() {
-		this.cam.position.set(hero.getPosition().x, hero.getPosition().y+150,0);
+		this.physicsCam.position.set(hero.getPosition().x, hero.getPosition().y, 0);
+		this.physicsCam.update();
+		this.cam.position.set(hero.getPosition().x * PPM, hero.getPosition().y * PPM, 0);
 		this.cam.update();
 		renderer2.setView(cam);
 		renderer2.render();
@@ -181,9 +188,11 @@ public class WorldRenderer {
 		spriteBatch.begin();
 			drawHero();
 		spriteBatch.end();
-		b2dr.render(world, cam.combined);
-		world.step(1/45f, 6, 2);
+		b2dr.render(world, physicsCam.combined);
+		world.step(1/60f, 6, 2);
 		MyInput.update();
+		System.out.println(this.cam.position);
+		System.out.println(this.physicsCam.position);
 	}
 	private void drawHero() {
 		heroFrame=tx.getHeroFrame();
@@ -202,7 +211,7 @@ public class WorldRenderer {
 				//heroFrame = hero.isFacingLeft() ? heroFallLeft : heroFallRight;
 			//}
 		//}
-		spriteBatch.draw(heroFrame, hero.getPosition().x - hero.SIZE/2, hero.getPosition().y - hero.SIZE/2, Hero.SIZE, Hero.SIZE);
+		spriteBatch.draw(heroFrame, hero.getPosition().x*PPM - hero.SIZE/2, hero.getPosition().y*PPM - hero.SIZE/2, Hero.SIZE, Hero.SIZE);
 	}
 	public void dispose(){
 		spriteBatch.dispose();
