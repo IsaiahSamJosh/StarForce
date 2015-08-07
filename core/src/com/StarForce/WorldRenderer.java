@@ -46,19 +46,6 @@ public class WorldRenderer {
 	private SpriteBatch spriteBatch;
 	private Body playerBody;
 	private MyContactListener cl;
-	
-	private float ppuX;	
-	private float ppuY;
-	
-	private int width;
-	private int height;
-	public void setSize (int w, int h) {
-		this.width = w;
-		this.height = h;
-		ppuX = (float)width / w;
-		ppuY = (float)height / h;
-		//resizes the screen based on the width and the height of the level
-	}
 	public WorldRenderer(StarForce game) {//first param was World world not Level level!
 		this.world = new World(new Vector2(0f, -10f), true);
 		cl=new MyContactListener();
@@ -72,7 +59,7 @@ public class WorldRenderer {
 		cam.setToOrtho(false, w,h);
 		this.physicsCam = new OrthographicCamera();
 		physicsCam.setToOrtho(false, w/PPM, h/PPM);
-		this.game = game;
+		this.setGame(game);
 		Gdx.input.setInputProcessor(new PlayScreen(game));
 		
 		BodyDef bdef = new BodyDef();
@@ -92,7 +79,7 @@ public class WorldRenderer {
 		
 		//create foot
 		
-		shape.setAsBox(4/PPM, 4/PPM, new Vector2(0/PPM,-24/PPM), 0);
+		shape.setAsBox(23/PPM, 4/PPM, new Vector2(0/PPM,-24/PPM), 0);
 		fdef.shape=shape;
 		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
 		fdef.filter.maskBits =B2DVars.BIT_GROUND;
@@ -177,6 +164,7 @@ public class WorldRenderer {
 		tx.loadAnimation();
 	}
 	public void render() {
+		world.step(1/60f, 6, 2);
 		this.physicsCam.position.set(hero.getPosition().x, hero.getPosition().y, 0);
 		this.physicsCam.update();
 		this.cam.position.set(hero.getPosition().x * PPM, hero.getPosition().y * PPM, 0);
@@ -188,7 +176,6 @@ public class WorldRenderer {
 			drawHero();
 		spriteBatch.end();
 		b2dr.render(world, physicsCam.combined);
-		world.step(1/60f, 6, 2);
 		MyInput.update();
 	}
 	private void drawHero() {
@@ -208,7 +195,7 @@ public class WorldRenderer {
 				//heroFrame = hero.isFacingLeft() ? heroFallLeft : heroFallRight;
 			//}
 		//}
-		spriteBatch.draw(heroFrame, hero.getPosition().x*PPM - hero.SIZE/2, hero.getPosition().y*PPM - hero.SIZE/2, Hero.SIZE, Hero.SIZE);
+		spriteBatch.draw(heroFrame, hero.getPosition().x*PPM - Hero.SIZE/2, hero.getPosition().y*PPM - Hero.SIZE/2, Hero.SIZE, Hero.SIZE);
 	}
 	public void dispose(){
 		spriteBatch.dispose();
@@ -225,5 +212,11 @@ public class WorldRenderer {
 	
 	public void update(float delta) {
 	handleInput();
+	}
+	public StarForce getGame() {
+		return game;
+	}
+	public void setGame(StarForce game) {
+		this.game = game;
 	}
 }
