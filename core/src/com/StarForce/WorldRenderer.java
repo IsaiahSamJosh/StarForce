@@ -91,15 +91,15 @@ public class WorldRenderer {
 		playerBody.createFixture(fdef).setUserData("player");
 		
 		//create foot
-		/*
-		shape.setAsBox(4, 4, new Vector2(0,-24), 0);
+		
+		shape.setAsBox(4/PPM, 4/PPM, new Vector2(0/PPM,-24/PPM), 0);
 		fdef.shape=shape;
 		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
 		fdef.filter.maskBits =B2DVars.BIT_GROUND;
 		fdef.isSensor=true;
 		playerBody.createFixture(fdef).setUserData("foot");
 		
-		*/
+		
 		this.hero = new Hero(playerBody);
 		spriteBatch = new SpriteBatch();
 		
@@ -191,8 +191,8 @@ public class WorldRenderer {
 		b2dr.render(world, physicsCam.combined);
 		world.step(1/60f, 6, 2);
 		MyInput.update();
-		System.out.println(this.cam.position);
-		System.out.println(this.physicsCam.position);
+		//System.out.println(this.cam.position);
+		//System.out.println(this.physicsCam.position);
 	}
 	private void drawHero() {
 		heroFrame=tx.getHeroFrame();
@@ -221,7 +221,7 @@ public class WorldRenderer {
 	public void handleInput() {
 		if (MyInput.isPressed(MyInput.BUTTON1)) {
 			if (cl.isPlayerOnGround()) {
-			playerBody.applyForceToCenter(0, 1500, true);	
+			playerBody.applyForceToCenter(0, 200, true);	
 			}
 		}
 	}
