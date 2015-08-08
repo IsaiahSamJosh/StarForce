@@ -21,6 +21,8 @@ public class MyContactListener implements ContactListener {
 		if (fb.getUserData() !=null && fb.getUserData().equals("foot")) {
 			numFootContacts++;
 		}
+		
+		// Enemy collision
 	}
 	
 	public void endContact (Contact c) {

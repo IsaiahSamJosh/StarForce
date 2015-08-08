@@ -1,7 +1,8 @@
 package com.StarForce;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
 import static com.StarForce.B2DVars.PPM;
+
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,7 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
-public class Hero {
+public class EnemyGrunt {
 
 	public enum State {
 		IDLE, WALKING, JUMPING, DYING
@@ -33,17 +34,22 @@ public class Hero {
 	private Animation walkRightAnimation;
 	private WorldRenderer worldrenderer;
 
-	public Hero(Body body, WorldRenderer wr) {
+	public EnemyGrunt(Body body, WorldRenderer wr) {
 		this.body = body;
 		this.bounds.height = SIZE;
 		this.bounds.width = SIZE;
 		this.spriteBatch = new SpriteBatch();
 		this.tx=new Textures();
 		this.worldrenderer = wr;
-		this.health = 10f;
+		this.health = 5f;
 		
 		loadTextures();
-
+	}
+	private boolean isFacingLeft() {
+		return facingLeft;
+	}
+	public State getState() {
+		return this.state;
 	}
 	private void loadTextures() {
 		tx.loadTextureAtlas();
@@ -51,57 +57,16 @@ public class Hero {
 		tx.loadTextureRegions();
 		tx.loadAnimation();
 	}
-	
-	public Body getBody() {
-		return body;
-	}
-	
-	public void disposeStuff() {
-		spriteBatch.dispose();
-		atlas.dispose();
-	}
-	
-	public Vector2 getPosition() {
-		return body.getPosition();
-	}
-	
-	public Rectangle getBounds() {
-		return bounds;
-	}
-	
-	public float getStateTime() {
-		return stateTime;
-	}
-	public State getState() {
-		return this.state;
-	}
-	
-	public void setState(State s) {
-		state = s;
-	}
-	
-	public boolean isFacingLeft() {
-		return facingLeft;
-	}
-	
-	public void setFacingLeft(boolean isLeft) {
-		facingLeft = isLeft;
-	}
-	
-	public void takeDamage(float health) {  // Use negative value to gain health, default is damage
-		this.health -= health;
-	}
-	
-	public void update(float delta) {
-		stateTime += delta;
-	}
 	public void update() {
 		spriteBatch.setProjectionMatrix(worldrenderer.getCam().combined);
 		spriteBatch.begin();
-			drawHero();
+			drawEnemyGrunt();
 		spriteBatch.end();
 	}
-	private void drawHero() {
+	public Vector2 getPosition() {
+		return body.getPosition();
+	}
+	private void drawEnemyGrunt() {
 		heroFrame=tx.getHeroFrame();
 		heroIdleRight=tx.getheroIdleRight();
 		heroIdleLeft=tx.getheroIdleLeft();
@@ -118,6 +83,6 @@ public class Hero {
 				//heroFrame = hero.isFacingLeft() ? heroFallLeft : heroFallRight;
 			//}
 		//}
-		spriteBatch.draw(heroFrame, getPosition().x*PPM - Hero.SIZE/2, getPosition().y*PPM - Hero.SIZE/2, Hero.SIZE, Hero.SIZE);
+		spriteBatch.draw(heroFrame, getPosition().x*PPM - EnemyGrunt.SIZE/2, getPosition().y*PPM - EnemyGrunt.SIZE/2, EnemyGrunt.SIZE, EnemyGrunt.SIZE);
 	}
 }

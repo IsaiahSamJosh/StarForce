@@ -33,10 +33,12 @@ public class WorldRenderer {
 	// Miscellaneous
 	private StarForce game;
 	private Hero hero;
+	private EnemyGrunt testEnemy;
 	// Physics stuff
 	private World world;
 	private Box2DDebugRenderer b2dr;
 	private Body playerBody;
+	private Body enemyBody;
 	private MyContactListener cl;
 	private BodyDef bdef;
 	private FixtureDef fdef;
@@ -66,11 +68,12 @@ public class WorldRenderer {
 		fdef = new FixtureDef();
 		shape = new PolygonShape();
 		
-		createPlayer();
+		createEntities();
 		createTiles();
 	}
 	
-	public void createPlayer() {
+	public void createEntities() {
+		// Player first
 		bdef.position.set(600/PPM,900/PPM);
 		bdef.type = BodyType.DynamicBody;
 		playerBody= world.createBody(bdef);
@@ -88,7 +91,20 @@ public class WorldRenderer {
 		fdef.filter.maskBits =B2DVars.BIT_GROUND;
 		fdef.isSensor=true;
 		playerBody.createFixture(fdef).setUserData("foot");
+		// Create player
 		this.hero = new Hero(playerBody, this);
+		
+		// Test enemy second
+		bdef.position.set(600/PPM + 30/PPM, 900/PPM);
+		bdef.type = BodyType.DynamicBody;
+		enemyBody= world.createBody(bdef);
+		shape.setAsBox(EnemyGrunt.SIZE/PPM/2f, EnemyGrunt.SIZE/PPM/2f);
+		fdef.shape = shape;
+		fdef.filter.categoryBits = B2DVars.BIT_ENEMY;
+		fdef.filter.maskBits =B2DVars.BIT_GROUND;
+		fdef.isSensor=false;
+		enemyBody.createFixture(fdef).setUserData("enemy");
+		this.testEnemy = new EnemyGrunt(enemyBody, this);
 	}
 	public OrthographicCamera getCam() {
 		return cam;
@@ -140,7 +156,7 @@ public class WorldRenderer {
 				fdef.friction = 1f;
 				fdef.shape = cs;
 				fdef.filter.categoryBits = B2DVars.BIT_GROUND;
-				fdef.filter.maskBits = B2DVars.BIT_PLAYER;
+				fdef.filter.maskBits = B2DVars.BIT_PLAYER | B2DVars.BIT_ENEMY;
 				fdef.isSensor = false;
 				world.createBody(bdef).createFixture(fdef).setUserData("Ground");
 
@@ -161,6 +177,7 @@ public class WorldRenderer {
 		renderer2.setView(cam);
 		renderer2.render();
 		hero.update();
+		testEnemy.update();
 		b2dr.render(world, physicsCam.combined);
 		MyInput.update();
 	}
