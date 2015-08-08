@@ -72,4 +72,7 @@ public Animation getwalkRightAnimation(){
 public TextureAtlas getAtlas(){
 	return atlas;
 }
+public void dispose(){
+	atlas.dispose();
+}
 }

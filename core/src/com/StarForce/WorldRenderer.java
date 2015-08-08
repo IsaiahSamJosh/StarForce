@@ -165,8 +165,10 @@ public class WorldRenderer {
 		MyInput.update();
 	}
 	public void dispose(){
-		hero.disposeStuff();
 		map.dispose();
+		game.dispose();
+		world.dispose();
+		b2dr.dispose();
 	}
 	public void handleInput() {
 		if (MyInput.isPressed(MyInput.BUTTON1)) {
