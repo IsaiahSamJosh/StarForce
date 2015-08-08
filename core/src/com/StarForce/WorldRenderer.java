@@ -1,13 +1,10 @@
 package com.StarForce;
 
 
-import com.StarForce.Hero.State;
+import static com.StarForce.B2DVars.PPM;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
@@ -24,49 +21,56 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class WorldRenderer {
-	private TiledMap map;
+	// Constants
 	float w = Gdx.graphics.getWidth();
     float h = Gdx.graphics.getHeight();
-    
+	// Tiled stuff
+	private TiledMap map;
 	private OrthogonalTiledMapRenderer renderer2;
+	// Camera stuff
 	private OrthographicCamera cam;
-	private float PPM = 100f;
 	private OrthographicCamera physicsCam;
+	// Miscellaneous
 	private StarForce game;
-	private Textures tx;
 	private Hero hero;
+	// Physics stuff
 	private World world;
 	private Box2DDebugRenderer b2dr;
-	private TextureRegion heroFrame;
-	private TextureRegion heroIdleRight;
-	private TextureRegion heroIdleLeft;
-	private Animation walkLeftAnimation;
-	private Animation walkRightAnimation;
-	private TextureAtlas atlas;
-	private SpriteBatch spriteBatch;
 	private Body playerBody;
 	private MyContactListener cl;
+	private BodyDef bdef;
+	private FixtureDef fdef;
+	private PolygonShape shape;
+	
 	public WorldRenderer(StarForce game) {//first param was World world not Level level!
+		// Physics
 		this.world = new World(new Vector2(0f, -10f), true);
 		cl=new MyContactListener();
 		world.setContactListener(cl);
 		this.b2dr = new Box2DDebugRenderer();
-		this.tx=new Textures();
+		// Tiled map
 		TmxMapLoader loader = new TmxMapLoader();
         map = loader.load("Level1.tmx");
         renderer2 = new OrthogonalTiledMapRenderer(map);
+        // Cameras
 		this.cam = new OrthographicCamera();
 		cam.setToOrtho(false, w,h);
 		this.physicsCam = new OrthographicCamera();
 		physicsCam.setToOrtho(false, w/PPM, h/PPM);
+		
 		this.setGame(game);
 		Gdx.input.setInputProcessor(new PlayScreen(game));
 		
-		BodyDef bdef = new BodyDef();
-		FixtureDef fdef = new FixtureDef();
-		PolygonShape shape = new PolygonShape();
+		// Physics definitions
+		bdef = new BodyDef();
+		fdef = new FixtureDef();
+		shape = new PolygonShape();
 		
-		// create player
+		createPlayer();
+		createTiles();
+	}
+	
+	public void createPlayer() {
 		bdef.position.set(600/PPM,900/PPM);
 		bdef.type = BodyType.DynamicBody;
 		playerBody= world.createBody(bdef);
@@ -78,20 +82,16 @@ public class WorldRenderer {
 		playerBody.createFixture(fdef).setUserData("player");
 		
 		//create foot
-		
 		shape.setAsBox(23/PPM, 4/PPM, new Vector2(0/PPM,-24/PPM), 0);
 		fdef.shape=shape;
 		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
 		fdef.filter.maskBits =B2DVars.BIT_GROUND;
 		fdef.isSensor=true;
 		playerBody.createFixture(fdef).setUserData("foot");
-		
-		
-		this.hero = new Hero(playerBody);
-		spriteBatch = new SpriteBatch();
-		
-		loadTextures();
-		createTiles();
+		this.hero = new Hero(playerBody, this);
+	}
+	public OrthographicCamera getCam() {
+		return cam;
 	}
 	private void createTiles() {
 		TmxMapLoader loader = new TmxMapLoader();
@@ -100,13 +100,10 @@ public class WorldRenderer {
 		
 		// load tile map
 		Integer tileSize = (Integer) (map.getProperties().get("tilewidth"));
-		
 		TiledMapTileLayer layer;
 		
 		layer = (TiledMapTileLayer) map.getLayers().get("Ground");
 		createLayer(layer, tileSize);
-		
-		
 	}
 	
 	private void createLayer(TiledMapTileLayer layer, Integer tileSize) {
@@ -130,8 +127,7 @@ public class WorldRenderer {
 				bdef.position.set(
 					(col + 0.5f) * tileSize/PPM,
 					(row + 0.5f) * tileSize/PPM
-				);
-				
+				);	
 				ChainShape cs = new ChainShape();
 				Vector2[] v = new Vector2[3];
 				v[0] = new Vector2(
@@ -147,8 +143,7 @@ public class WorldRenderer {
 				fdef.filter.maskBits = B2DVars.BIT_PLAYER;
 				fdef.isSensor = false;
 				world.createBody(bdef).createFixture(fdef).setUserData("Ground");
-				
-				
+
 			}
 		}
 	}
@@ -157,12 +152,6 @@ public class WorldRenderer {
 		return hero;
 	}
 	
-	private void loadTextures() {
-		tx.loadTextureAtlas();
-		tx.loadTextures();
-		tx.loadTextureRegions();
-		tx.loadAnimation();
-	}
 	public void render() {
 		world.step(1/60f, 6, 2);
 		this.physicsCam.position.set(hero.getPosition().x, hero.getPosition().y, 0);
@@ -171,35 +160,12 @@ public class WorldRenderer {
 		this.cam.update();
 		renderer2.setView(cam);
 		renderer2.render();
-		spriteBatch.setProjectionMatrix(cam.combined);
-		spriteBatch.begin();
-			drawHero();
-		spriteBatch.end();
+		hero.update();
 		b2dr.render(world, physicsCam.combined);
 		MyInput.update();
 	}
-	private void drawHero() {
-		heroFrame=tx.getHeroFrame();
-		heroIdleRight=tx.getheroIdleRight();
-		heroIdleLeft=tx.getheroIdleLeft();
-		walkLeftAnimation=tx.getwalkLeftAnimation();
-		walkRightAnimation=tx.getwalkRightAnimation();
-		atlas=tx.getAtlas();
-		heroFrame = hero.isFacingLeft() ? heroIdleLeft : heroIdleRight;
-		if(hero.getState().equals(State.WALKING)) {
-			heroFrame = hero.isFacingLeft() ? walkLeftAnimation.getKeyFrame(hero.getStateTime(), true) : walkRightAnimation.getKeyFrame(hero.getStateTime(), true);
-		} //else if (hero.getState().equals(State.JUMPING)) {
-			//if (hero.getVelocity().y > 0) {
-				//heroFrame = hero.isFacingLeft() ? heroJumpLeft : heroJumpRight;
-			//} else {
-				//heroFrame = hero.isFacingLeft() ? heroFallLeft : heroFallRight;
-			//}
-		//}
-		spriteBatch.draw(heroFrame, hero.getPosition().x*PPM - Hero.SIZE/2, hero.getPosition().y*PPM - Hero.SIZE/2, Hero.SIZE, Hero.SIZE);
-	}
 	public void dispose(){
-		spriteBatch.dispose();
-		atlas.dispose();
+		hero.disposeStuff();
 		map.dispose();
 	}
 	public void handleInput() {
