@@ -19,15 +19,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-
-public class MainMenuScreen implements Screen {
+public class LevelScreen implements Screen {
 	Stage stage;
 	Skin skin;
-	StarForce game;
-	TextureAtlas atlas;
 	BitmapFont font;
 	Pixmap pixmap;
-	public MainMenuScreen(StarForce game){
+	TextureAtlas atlas;
+	StarForce game;
+	public LevelScreen(StarForce game){
 		this.game = game;
 	}
 		public void render(float delta) {
@@ -35,7 +34,7 @@ public class MainMenuScreen implements Screen {
 			stage.act(Gdx.graphics.getDeltaTime());
 	        stage.draw();
 
-			//stage.setDebugAll(true); // This is optional, but enables debug lines for tables.
+	        //stage.setDebugAll(true); // This is optional, but enables debug lines for tables.
 			
 		}
 
@@ -66,7 +65,7 @@ public class MainMenuScreen implements Screen {
 	        skin.add("white", new Texture(pixmap));
 
 	        // Store the default libgdx font under the name "default".
-	        skin.add("default", new BitmapFont());
+	        skin.add("default", new BitmapFont()); //default is the name of the skin
 
 	        // Configure a TextButtonStyle and name it "default". Skin resources are stored by type, so this doesn't overwrite the font.
 	        TextButtonStyle textButtonStyle = new TextButtonStyle();
@@ -77,28 +76,37 @@ public class MainMenuScreen implements Screen {
 	        textButtonStyle.font = font;
 	        skin.add("default", textButtonStyle);
 	        // Create a button with the "default" TextButtonStyle. A 3rd parameter can be used to specify a name other than "default".
-	        final TextButton button = new TextButton("New Game", skin);
-	        final TextButton button1 = new TextButton("How to Play", skin);
-	        final TextButton options = new TextButton("Options", skin);
-	        table.add(button).width(300).height(100).spaceBottom(10);
+	        final TextButton level1 = new TextButton("Level 1", skin);
+	        final TextButton level2 = new TextButton("Level 2", skin);
+	        final TextButton level3 = new TextButton("Level 3", skin);
+	        final TextButton level4 = new TextButton("Level 4", skin);
+	        table.add(level1).width(50).height(30);
 	        table.row();
-	        table.add(options).width(300).height(100).spaceBottom(10);
+	        table.add(level2).width(50).height(30);
 	        table.row();
-	        table.add(button1).width(300).height(100).spaceBottom(10);
-	        button.addListener(new ChangeListener() {
+	        table.add(level3).width(50).height(30);
+	        table.row();
+	        table.add(level4).width(50).height(30);
+	        level1.addListener(new ChangeListener() {
 	        	public void changed (ChangeEvent event, Actor actor) {
-	        	game.setScreen(new LevelScreen(game));	
+	                       game.setScreen(new PlayScreen(game));
+	        	
 	        	}
 	        });
-	        button1.addListener(new ChangeListener(){
+        level3.addListener(new ChangeListener(){
+        	public void changed (ChangeEvent event, Actor actor) {
+        		   game.setScreen(new PlayScreen(game));
+        	}
+        });
+	       level4.addListener(new ChangeListener(){
 	        	public void changed (ChangeEvent event, Actor actor) {
-	        		
+	        		   game.setScreen(new PlayScreen(game));
 	        	}
 	        });
 		}
 		@Override
 		public void hide() {
-			 Gdx.input.setInputProcessor(null);
+			// TODO Auto-generated method stub
 			
 		}
 
@@ -119,9 +127,8 @@ public class MainMenuScreen implements Screen {
 			stage.dispose();
 			skin.dispose();
 			font.dispose();
-			atlas.dispose();
 			pixmap.dispose();
-			 Gdx.input.setInputProcessor(null);
+			atlas.dispose();
 		}
 
 	}
