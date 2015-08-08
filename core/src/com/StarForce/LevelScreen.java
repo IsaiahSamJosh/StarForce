@@ -129,6 +129,7 @@ public class LevelScreen implements Screen {
 			font.dispose();
 			pixmap.dispose();
 			atlas.dispose();
+			Gdx.input.setInputProcessor(null);
 		}
 
 	}

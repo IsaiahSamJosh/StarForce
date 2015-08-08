@@ -41,8 +41,5 @@ public class MyContactListener implements ContactListener {
 	
 	public void preSolve (Contact c, Manifold m) {}
 	public void postSolve (Contact c, ContactImpulse ci) {}
-	
-
-
-
 }
+
