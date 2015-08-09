@@ -43,8 +43,8 @@ public class WorldRenderer {
 	private BodyDef bdef;
 	private FixtureDef fdef;
 	private PolygonShape shape;
-	
-	public WorldRenderer(StarForce game) {//first param was World world not Level level!
+	private Box2dStuff bstuff;
+	public WorldRenderer(StarForce game) {
 		// Physics
 		this.world = new World(new Vector2(0f, -10f), true);
 		cl=new MyContactListener();
@@ -62,11 +62,8 @@ public class WorldRenderer {
 		
 		this.setGame(game);
 		Gdx.input.setInputProcessor(new PlayScreen(game));
+		bstuff = new Box2dStuff();
 		
-		// Physics definitions
-		bdef = new BodyDef();
-		fdef = new FixtureDef();
-		shape = new PolygonShape();
 		
 		createEntities();
 		createTiles();
@@ -74,34 +71,26 @@ public class WorldRenderer {
 	
 	public void createEntities() {
 		// Player first
-		bdef.position.set(600/PPM,900/PPM);
-		bdef.type = BodyType.DynamicBody;
+		bdef = bstuff.getBodyRef(bdef, 600, 900, BodyType.DynamicBody);
+		shape = bstuff.getPolygonShape(shape, Hero.SIZE, Hero.SIZE);
+		fdef = bstuff.getFixtureDef(fdef,shape, B2DVars.BIT_PLAYER, B2DVars.BIT_GROUND);
 		playerBody= world.createBody(bdef);
-		shape.setAsBox(Hero.SIZE/PPM/2f, Hero.SIZE/PPM/2f);
-		fdef.shape = shape;
-		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
-		fdef.filter.maskBits =B2DVars.BIT_GROUND;
 		fdef.isSensor=false;
 		playerBody.createFixture(fdef).setUserData("player");
 		
 		//create foot
-		shape.setAsBox(23/PPM, 4/PPM, new Vector2(0/PPM,-24/PPM), 0);
-		fdef.shape=shape;
-		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
-		fdef.filter.maskBits =B2DVars.BIT_GROUND;
+		shape = bstuff.getPolygonShape(shape, 46, 8, new Vector2(0/PPM, -24/PPM), 0);//2nd and 3rd parameters do not divide by 2f(in this overloaded version)
+		fdef = bstuff.getFixtureDef(fdef,shape, B2DVars.BIT_PLAYER, B2DVars.BIT_GROUND);
 		fdef.isSensor=true;
 		playerBody.createFixture(fdef).setUserData("foot");
 		// Create player
 		this.hero = new Hero(playerBody, this);
 		
 		// Test enemy second
-		bdef.position.set(600/PPM + 30/PPM, 900/PPM);
-		bdef.type = BodyType.DynamicBody;
+		bdef = bstuff.getBodyRef(bdef, (600 + 30), 900, BodyType.DynamicBody);
 		enemyBody= world.createBody(bdef);
-		shape.setAsBox(EnemyGrunt.SIZE/PPM/2f, EnemyGrunt.SIZE/PPM/2f);
-		fdef.shape = shape;
-		fdef.filter.categoryBits = B2DVars.BIT_ENEMY;
-		fdef.filter.maskBits =B2DVars.BIT_GROUND;
+		shape = bstuff.getPolygonShape(shape, EnemyGrunt.SIZE, EnemyGrunt.SIZE);
+		fdef = bstuff.getFixtureDef(fdef, shape, B2DVars.BIT_ENEMY, B2DVars.BIT_GROUND);
 		fdef.isSensor=false;
 		enemyBody.createFixture(fdef).setUserData("enemy");
 		this.testEnemy = new EnemyGrunt(enemyBody, this);
@@ -169,6 +158,9 @@ public class WorldRenderer {
 	}
     public EnemyGrunt getEnemyGrunt(){
     	return testEnemy;
+    }
+    public World getWorld(){
+    	return world;
     }
 	public void render() {
 		world.step(1/60f, 6, 2);
