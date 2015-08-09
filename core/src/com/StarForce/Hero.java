@@ -24,13 +24,22 @@ public class Hero {
 	boolean facingLeft = false;
 	private SpriteBatch spriteBatch;
     
-	private Textures tx;
-	private TextureAtlas atlas;
-	private TextureRegion heroFrame;
-	private TextureRegion heroIdleRight;
+private static final float RUNNING_FRAME_DURATION = 0.06f;
+	
 	private TextureRegion heroIdleLeft;
+	TextureRegion[] walkRightFrames;
+	TextureRegion[] walkLeftFrames;
+	private TextureRegion heroIdleRight;
+	private TextureRegion heroFrame;
+	private TextureRegion heroJumpLeft;
+	private TextureRegion heroFallLeft;
+	private TextureRegion heroJumpRight;
+	private TextureRegion heroFallRight;
 	private Animation walkLeftAnimation;
 	private Animation walkRightAnimation;
+	
+	private Animations anim;
+	TextureAtlas atlas;
 	private WorldRenderer worldrenderer;
 
 	public Hero(Body body, WorldRenderer wr) {
@@ -38,18 +47,27 @@ public class Hero {
 		this.bounds.height = SIZE;
 		this.bounds.width = SIZE;
 		this.spriteBatch = new SpriteBatch();
-		this.tx=new Textures();
 		this.worldrenderer = wr;
 		this.health = 10f;
+		anim=new Animations();
 		
 		loadTextures();
 
 	}
 	private void loadTextures() {
-		tx.loadTextureAtlas();
-		tx.loadTextures();
-		tx.loadTextureRegions();
-		tx.loadAnimation();
+		atlas=anim.getTextureAtlas(atlas, "PlayerSprite.txt");
+		heroIdleLeft=anim.getTextureRegion(atlas, heroIdleLeft, "Ntransparent01");
+		heroIdleRight=anim.getTextureRegion(heroIdleRight, heroIdleLeft);
+		heroJumpLeft=anim.getTextureRegion(atlas, heroJumpLeft, "Ntransparent01");
+		heroJumpRight=anim.getTextureRegion(heroJumpRight, heroJumpLeft);
+		heroFallLeft=anim.getTextureRegion(atlas, heroFallLeft, "Ntransparent01");
+		heroFallRight=anim.getTextureRegion(heroFallRight, heroFallLeft);
+		
+		walkLeftFrames=anim.getTextureRegions(atlas, walkLeftFrames, 5, "Ntransparent0");
+		walkRightFrames=anim.getTextureRegions(atlas, walkRightFrames, walkLeftFrames, 5);
+		
+		walkLeftAnimation= anim.getAnimation(walkLeftAnimation, walkLeftFrames);
+		walkRightAnimation=anim.getAnimation(walkRightAnimation, walkRightFrames);
 	}
 	
 	public Body getBody() {
@@ -58,7 +76,6 @@ public class Hero {
 	
 	public void disposeStuff() {
 		spriteBatch.dispose();
-		atlas.dispose();
 	}
 	
 	public Vector2 getPosition() {
@@ -102,12 +119,6 @@ public class Hero {
 		spriteBatch.end();
 	}
 	private void drawHero() {
-		heroFrame=tx.getHeroFrame();
-		heroIdleRight=tx.getheroIdleRight();
-		heroIdleLeft=tx.getheroIdleLeft();
-		walkLeftAnimation=tx.getwalkLeftAnimation();
-		walkRightAnimation=tx.getwalkRightAnimation();
-		atlas=tx.getAtlas();
 		heroFrame = isFacingLeft() ? heroIdleLeft : heroIdleRight;
 		if(getState().equals(State.WALKING)) {
 			heroFrame = isFacingLeft() ? walkLeftAnimation.getKeyFrame(stateTime, true) : walkRightAnimation.getKeyFrame(stateTime, true);

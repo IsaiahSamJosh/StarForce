@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class WorldController {
 	private Hero hero;
+	private EnemyGrunt eg;
     enum Keys {
         LEFT, RIGHT, CLIMBING, FIRE, W, S, rBLOCK, lBLOCK
 }
@@ -25,6 +26,7 @@ public class WorldController {
 	};
 	public WorldController(WorldRenderer renderer, StarForce game) { //was World world!
 		this.hero=renderer.getHero();
+		this.eg=renderer.getEnemyGrunt();
 }
 	public void leftPressed() {
         keys.get(keys.put(Keys.LEFT, true));
@@ -47,21 +49,34 @@ public void update(float delta) {
 }
 public void updateHero(float delta){
 	hero.update(delta);
+	eg.update(delta);
 }
 private void processInput(float delta) {
 	if (keys.get(Keys.LEFT)) {
 		hero.getBody().applyForceToCenter(new Vector2(-10, 0), true);
 		hero.setFacingLeft(true);
         hero.setState(State.WALKING);
+        if(hero.getPosition().x < eg.getPosition().x)
+        	eg.getBody().applyForceToCenter(new Vector2(-5,0), true);
+        else
+        	eg.getBody().applyForceToCenter(new Vector2(5,0), true);
 	}
 	if (keys.get(Keys.RIGHT)) {
 		hero.getBody().applyForceToCenter(new Vector2(10, 0), true);
 		hero.setFacingLeft(false);
         hero.setState(State.WALKING);
+        if(hero.getPosition().x < eg.getPosition().x)
+        	eg.getBody().applyForceToCenter(new Vector2(-5,0), true);
+        else
+        	eg.getBody().applyForceToCenter(new Vector2(5,0), true);
 	}
 	if ((keys.get(Keys.LEFT) && keys.get(Keys.RIGHT)) ||
             (!keys.get(Keys.LEFT) && !(keys.get(Keys.RIGHT)))) {
 		 hero.setState(State.IDLE);
+		 if(hero.getPosition().x < eg.getPosition().x)
+	        	eg.getBody().applyForceToCenter(new Vector2(-5,0), true);
+	        else
+	        	eg.getBody().applyForceToCenter(new Vector2(5,0), true);
 	}
 }
 }

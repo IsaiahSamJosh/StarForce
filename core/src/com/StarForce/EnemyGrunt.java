@@ -25,24 +25,28 @@ public class EnemyGrunt {
 	boolean facingLeft = false;
 	private SpriteBatch spriteBatch;
     
-	private Textures tx;
-	private TextureAtlas atlas;
-	private TextureRegion heroFrame;
-	private TextureRegion heroIdleRight;
 	private TextureRegion heroIdleLeft;
+	TextureRegion[] walkRightFrames;
+	TextureRegion[] walkLeftFrames;
+	private TextureRegion heroIdleRight;
+	private TextureRegion heroFrame;
+	private TextureRegion heroJumpLeft;
+	private TextureRegion heroFallLeft;
+	private TextureRegion heroJumpRight;
+	private TextureRegion heroFallRight;
 	private Animation walkLeftAnimation;
 	private Animation walkRightAnimation;
+	TextureAtlas atlas;
 	private WorldRenderer worldrenderer;
-
+    private Animations anim;
 	public EnemyGrunt(Body body, WorldRenderer wr) {
 		this.body = body;
 		this.bounds.height = SIZE;
 		this.bounds.width = SIZE;
 		this.spriteBatch = new SpriteBatch();
-		this.tx=new Textures();
 		this.worldrenderer = wr;
 		this.health = 5f;
-		
+		anim = new Animations();
 		loadTextures();
 	}
 	private boolean isFacingLeft() {
@@ -52,10 +56,22 @@ public class EnemyGrunt {
 		return this.state;
 	}
 	private void loadTextures() {
-		tx.loadTextureAtlas();
-		tx.loadTextures();
-		tx.loadTextureRegions();
-		tx.loadAnimation();
+		atlas=anim.getTextureAtlas(atlas, "PlayerSprite.txt");
+		heroIdleLeft=anim.getTextureRegion(atlas, heroIdleLeft, "Ntransparent01");
+		heroIdleRight=anim.getTextureRegion(heroIdleRight, heroIdleLeft);
+		heroJumpLeft=anim.getTextureRegion(atlas, heroJumpLeft, "Ntransparent01");
+		heroJumpRight=anim.getTextureRegion(heroJumpRight, heroJumpLeft);
+		heroFallLeft=anim.getTextureRegion(atlas, heroFallLeft, "Ntransparent01");
+		heroFallRight=anim.getTextureRegion(heroFallRight, heroFallLeft);
+		
+		walkLeftFrames=anim.getTextureRegions(atlas, walkLeftFrames, 5, "Ntransparent0");
+		walkRightFrames=anim.getTextureRegions(atlas, walkRightFrames, walkLeftFrames, 5);
+		
+		walkLeftAnimation= anim.getAnimation(walkLeftAnimation, walkLeftFrames);
+		walkRightAnimation=anim.getAnimation(walkRightAnimation, walkRightFrames);
+	}
+	public void update(float delta){
+		stateTime+=delta;
 	}
 	public void update() {
 		spriteBatch.setProjectionMatrix(worldrenderer.getCam().combined);
@@ -66,13 +82,10 @@ public class EnemyGrunt {
 	public Vector2 getPosition() {
 		return body.getPosition();
 	}
+	public Body getBody() {
+		return body;
+	}
 	private void drawEnemyGrunt() {
-		heroFrame=tx.getHeroFrame();
-		heroIdleRight=tx.getheroIdleRight();
-		heroIdleLeft=tx.getheroIdleLeft();
-		walkLeftAnimation=tx.getwalkLeftAnimation();
-		walkRightAnimation=tx.getwalkRightAnimation();
-		atlas=tx.getAtlas();
 		heroFrame = isFacingLeft() ? heroIdleLeft : heroIdleRight;
 		if(getState().equals(State.WALKING)) {
 			heroFrame = isFacingLeft() ? walkLeftAnimation.getKeyFrame(stateTime, true) : walkRightAnimation.getKeyFrame(stateTime, true);

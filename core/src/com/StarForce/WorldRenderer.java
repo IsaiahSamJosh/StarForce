@@ -167,7 +167,9 @@ public class WorldRenderer {
 	public Hero getHero() {
 		return hero;
 	}
-	
+    public EnemyGrunt getEnemyGrunt(){
+    	return testEnemy;
+    }
 	public void render() {
 		world.step(1/60f, 6, 2);
 		this.physicsCam.position.set(hero.getPosition().x, hero.getPosition().y, 0);
@@ -180,12 +182,6 @@ public class WorldRenderer {
 		testEnemy.update();
 		b2dr.render(world, physicsCam.combined);
 		MyInput.update();
-	}
-	public void dispose(){
-		map.dispose();
-		game.dispose();
-		world.dispose();
-		b2dr.dispose();
 	}
 	public void handleInput() {
 		if (MyInput.isPressed(MyInput.BUTTON1)) {

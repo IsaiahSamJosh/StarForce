@@ -13,8 +13,6 @@ public class PlayScreen implements Screen, InputProcessor {
     private WorldRenderer renderer;
     private WorldController controller;
     StarForce game;
-	private Hero hero;
-	private Textures tx;
 	public PlayScreen(StarForce game){
     	this.game = game;
     }
@@ -40,8 +38,6 @@ public class PlayScreen implements Screen, InputProcessor {
 	public void show() {
 		renderer = new WorldRenderer(game); //first param was world
         controller = new WorldController(renderer,game);
-        hero = new Hero(null, renderer);
-        tx=new Textures();
         Gdx.input.setInputProcessor(this);
 	}
 
@@ -65,9 +61,7 @@ public class PlayScreen implements Screen, InputProcessor {
 
 	@Override
 	public void dispose() {
-		renderer.dispose();
-		hero.disposeStuff();
-		tx.dispose();
+		
 	}
 
 	@Override
