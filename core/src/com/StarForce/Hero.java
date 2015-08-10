@@ -90,7 +90,7 @@ private static final float RUNNING_FRAME_DURATION = 0.06f;
 		return stateTime;
 	}
 	public State getState() {
-		return this.state;
+		return state;
 	}
 	
 	public void setState(State s) {

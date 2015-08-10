@@ -3,6 +3,7 @@ package com.StarForce;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.StarForce.EnemyGrunt.EnemyState;
 import com.StarForce.Hero.State;
 import com.StarForce.Hero;
 import com.badlogic.gdx.math.Vector2;
@@ -46,37 +47,39 @@ public void rightReleased() {
 public void update(float delta) {
 	processInput(delta);
 	updateHero(delta);
+	followHero();
 }
 public void updateHero(float delta){
 	hero.update(delta);
 	eg.update(delta);
+}
+private void followHero(){
+	//eg.getBody().getLinearVelocity() can be used with the enemy and the hero to set a maximum linear velocity
+	if(hero.getPosition().x < eg.getPosition().x){
+    	eg.setState(EnemyState.WALKING);
+    	eg.setFacingLeft(true);
+    	eg.getBody().applyForceToCenter(new Vector2(-5,0), true);
+    }
+    else{
+    	eg.setState(EnemyState.WALKING);
+	eg.setFacingLeft(false);
+    	eg.getBody().applyForceToCenter(new Vector2(5,0), true);
+}	
 }
 private void processInput(float delta) {
 	if (keys.get(Keys.LEFT)) {
 		hero.getBody().applyForceToCenter(new Vector2(-10, 0), true);
 		hero.setFacingLeft(true);
         hero.setState(State.WALKING);
-        if(hero.getPosition().x < eg.getPosition().x)
-        	eg.getBody().applyForceToCenter(new Vector2(-5,0), true);
-        else
-        	eg.getBody().applyForceToCenter(new Vector2(5,0), true);
 	}
 	if (keys.get(Keys.RIGHT)) {
 		hero.getBody().applyForceToCenter(new Vector2(10, 0), true);
 		hero.setFacingLeft(false);
         hero.setState(State.WALKING);
-        if(hero.getPosition().x < eg.getPosition().x)
-        	eg.getBody().applyForceToCenter(new Vector2(-5,0), true);
-        else
-        	eg.getBody().applyForceToCenter(new Vector2(5,0), true);
 	}
 	if ((keys.get(Keys.LEFT) && keys.get(Keys.RIGHT)) ||
             (!keys.get(Keys.LEFT) && !(keys.get(Keys.RIGHT)))) {
 		 hero.setState(State.IDLE);
-		 if(hero.getPosition().x < eg.getPosition().x)
-	        	eg.getBody().applyForceToCenter(new Vector2(-5,0), true);
-	        else
-	        	eg.getBody().applyForceToCenter(new Vector2(5,0), true);
 	}
 }
 }

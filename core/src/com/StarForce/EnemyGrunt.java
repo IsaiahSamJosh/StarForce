@@ -2,6 +2,7 @@ package com.StarForce;
 
 import static com.StarForce.B2DVars.PPM;
 
+import com.StarForce.Hero.State;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -12,7 +13,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 
 public class EnemyGrunt {
 
-	public enum State {
+	public enum EnemyState {
 		IDLE, WALKING, JUMPING, DYING
 	}
 	static final float SIZE = 50f; // half a unit
@@ -21,7 +22,7 @@ public class EnemyGrunt {
 	float stateTime = 0;
 	Body body;
 	Rectangle bounds = new Rectangle();
-	State state = State.IDLE;
+	EnemyState state = EnemyState.IDLE;
 	boolean facingLeft = false;
 	private SpriteBatch spriteBatch;
     
@@ -49,11 +50,18 @@ public class EnemyGrunt {
 		anim = new Animations();
 		loadTextures();
 	}
-	private boolean isFacingLeft() {
+	public boolean isFacingLeft() {
 		return facingLeft;
 	}
-	public State getState() {
-		return this.state;
+	public void setFacingLeft(boolean isLeft) {
+		facingLeft = isLeft;
+	}
+	public EnemyState getState() {
+		return state;
+	}
+	
+	public void setState(EnemyState egstate) {
+		state = egstate;
 	}
 	private void loadTextures() {
 		atlas=anim.getTextureAtlas(atlas, "PlayerSprite.txt");
@@ -87,7 +95,7 @@ public class EnemyGrunt {
 	}
 	private void drawEnemyGrunt() {
 		heroFrame = isFacingLeft() ? heroIdleLeft : heroIdleRight;
-		if(getState().equals(State.WALKING)) {
+		if(getState().equals(EnemyState.WALKING)) {
 			heroFrame = isFacingLeft() ? walkLeftAnimation.getKeyFrame(stateTime, true) : walkRightAnimation.getKeyFrame(stateTime, true);
 		} //else if (hero.getState().equals(State.JUMPING)) {
 			//if (hero.getVelocity().y > 0) {
