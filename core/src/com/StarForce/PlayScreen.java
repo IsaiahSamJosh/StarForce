@@ -6,13 +6,31 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar.ProgressBarStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class PlayScreen implements Screen, InputProcessor {
 	private int width, height;
     private WorldRenderer renderer;
     private WorldController controller;
     StarForce game;
+    
+    Pixmap pixmap;
+    Stage stage;
+	Skin skin;
+	TextureRegionDrawable textureBar;
+	ProgressBarStyle barStyle;
+	ProgressBar bar;
 	public PlayScreen(StarForce game){
     	this.game = game;
     }
@@ -21,10 +39,12 @@ public class PlayScreen implements Screen, InputProcessor {
 	Gdx.gl.glClearColor(0, 0, 0, 1); //sets the color (black), last parameter is the opacity
 	Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);//clears the screen with the created color
 
+	
 	controller.update(delta);
 	renderer.update(delta);
     renderer.render();
-
+    stage.act(Gdx.graphics.getDeltaTime());
+    stage.draw();
 	}
 
 	@Override
@@ -36,6 +56,23 @@ public class PlayScreen implements Screen, InputProcessor {
 
 	@Override
 	public void show() {
+		stage = new Stage();
+		Table table = new Table();
+		table.setFillParent(true);
+		stage.addActor(table);
+		skin = new Skin();
+		pixmap = new Pixmap(1, 1, Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+        skin.add("white", new Texture(pixmap));
+        textureBar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("greenbar.png"))));
+        barStyle = new ProgressBarStyle(skin.newDrawable("white", Color.DARK_GRAY), textureBar);
+        barStyle.knobBefore = barStyle.knob;
+        bar = new ProgressBar(0, 10, 0.5f, false, barStyle);
+        bar.setPosition(1, 1);
+        bar.setSize(290, bar.getPrefHeight());
+        bar.setAnimateDuration(2);
+        stage.addActor(bar);
 		renderer = new WorldRenderer(game); //first param was world
         controller = new WorldController(renderer,game);
         Gdx.input.setInputProcessor(this);
