@@ -2,7 +2,6 @@ package com.StarForce;
 
 import static com.StarForce.B2DVars.PPM;
 
-import com.StarForce.Hero.State;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;

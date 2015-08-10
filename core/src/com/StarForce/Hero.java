@@ -1,7 +1,8 @@
 package com.StarForce;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
 import static com.StarForce.B2DVars.PPM;
+
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -24,8 +25,6 @@ public class Hero {
 	boolean facingLeft = false;
 	private SpriteBatch spriteBatch;
     
-private static final float RUNNING_FRAME_DURATION = 0.06f;
-	
 	private TextureRegion heroIdleLeft;
 	TextureRegion[] walkRightFrames;
 	TextureRegion[] walkLeftFrames;
