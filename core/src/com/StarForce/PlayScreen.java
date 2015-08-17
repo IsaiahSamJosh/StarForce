@@ -11,12 +11,17 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar.ProgressBarStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class PlayScreen implements Screen, InputProcessor {
@@ -25,6 +30,7 @@ public class PlayScreen implements Screen, InputProcessor {
     private WorldController controller;
     StarForce game;
     
+    BitmapFont font;
     Pixmap pixmap;
     Stage stage;
 	Skin skin;
@@ -57,22 +63,40 @@ public class PlayScreen implements Screen, InputProcessor {
 	@Override
 	public void show() {
 		stage = new Stage();
+		Texture bground = new Texture(Gdx.files.internal("pbBackground.png"));
 		Table table = new Table();
 		table.setFillParent(true);
 		stage.addActor(table);
+		font = new BitmapFont(Gdx.files.internal("gamefonts.fnt"));
+		font.setScale(.8f);
 		skin = new Skin();
 		pixmap = new Pixmap(1, 1, Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
         pixmap.fill();
         skin.add("white", new Texture(pixmap));
-        textureBar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("greenbar.png"))));
+        LabelStyle lstyle = new LabelStyle();
+        lstyle.font=font;
+        Label mylabel = new Label("HP", lstyle);
+        mylabel.setColor(Color.RED);
+        mylabel.setPosition(1, 6);
+        table.addActor(mylabel);
+        textureBar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("pb.png"))));
         barStyle = new ProgressBarStyle(skin.newDrawable("white", Color.DARK_GRAY), textureBar);
-        barStyle.knobBefore = barStyle.knob;
+        barStyle.background = new TextureRegionDrawable(new TextureRegion(bground));
+        barStyle.knobBefore=barStyle.knob;
         bar = new ProgressBar(0, 10, 0.5f, false, barStyle);
         bar.setPosition(1, 1);
-        bar.setSize(290, bar.getPrefHeight());
+        bar.setValue(0);
         bar.setAnimateDuration(2);
-        stage.addActor(bar);
+        table.addActor(bar);
+        bar.addListener(new ChangeListener(){
+
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				System.out.println("it is working");
+				
+			}
+        });
 		renderer = new WorldRenderer(game); //first param was world
         controller = new WorldController(renderer,game);
         Gdx.input.setInputProcessor(this);
