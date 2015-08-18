@@ -68,7 +68,7 @@ public class PlayScreen implements Screen, InputProcessor {
 		table.setFillParent(true);
 		stage.addActor(table);
 		font = new BitmapFont(Gdx.files.internal("gamefonts.fnt"));
-		font.setScale(.8f);
+		font.getData().setScale(.8f);
 		skin = new Skin();
 		pixmap = new Pixmap(1, 1, Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
